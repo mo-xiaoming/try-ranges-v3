@@ -1,16 +1,17 @@
 {
-  description = "cpp project with nix";
+  description = "try range v3";
 
   outputs = { self, nixpkgs }: with nixpkgs.legacyPackages.x86_64-linux; {
     drv-attrs = {
-      pname = "cpp-nix-template";
+      pname = "try-range-v3";
       version = "0.0.1";
 
       src = self;
 
+#      nativeBuildInputs = [ cmake ninja gdb valgrind (clang-tools.override { stdenv = gcc11Stdenv; })];
       nativeBuildInputs = [ cmake ninja gdb valgrind ];
 
-      buildInputs = [ spdlog doctest boost175 ranges-v3 ];
+      buildInputs = [ spdlog doctest boost175 range-v3 ];
 
       doCheck = true;
       checkPhase = "ctest --output-on-failure";
