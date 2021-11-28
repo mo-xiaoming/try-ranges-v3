@@ -34,8 +34,8 @@ TEST_CASE("Binary to decimal conversion, 0b1110 = 14") {
   CHECK_EQ(val, 14);
 
   SUBCASE("dot product") {
-    CHECK_EQ(val, rg::accumulate(
-                      rv::zip_with(std::multiplies<>(), r_rev, r_pow), .0));
+    CHECK_EQ(val,
+             rg::accumulate(rv::zip_with(rg::multiplies(), r_rev, r_pow), .0));
   }
 }
 
@@ -77,8 +77,8 @@ TEST_CASE("Caesar cipher") {
 }
 
 TEST_CASE("Triangular sequence") {
-  auto r_int = rv::iota(1);                               // [1,2,3,4,5...]
-  auto r_triseq = r_int | rv::partial_sum(std::plus<>()); // [1,3,6,10,15...]
+  auto r_int = rv::iota(1);                            // [1,2,3,4,5...]
+  auto r_triseq = r_int | rv::partial_sum(rg::plus()); // [1,3,6,10,15...]
   auto tri5 = r_triseq | rv::take(5);
   CHECK_UNARY(rg::equal(tri5, std::array{1, 3, 6, 10, 15}));
 }
@@ -91,7 +91,7 @@ TEST_CASE("accumulate, foldl") {
 
   // foldl (*) 1 [1,2,3,4]
   const std::vector m = {1, 2, 3, 4};
-  const int mal = rg::accumulate(m, 1, std::multiplies<>());
+  const int mal = rg::accumulate(m, 1, rg::multiplies());
   CHECK_EQ(mal, 24);
 }
 
@@ -154,7 +154,7 @@ TEST_CASE("sort") {
   CHECK_UNARY(rg::equal(v, std::array{1, 3, 6, 7}));
 
   std::array v1 = {6, 7, 1, 3};
-  rg::sort(v1, std::greater<>());
+  rg::sort(v1, rg::greater());
   CHECK_UNARY(rg::equal(v1, std::array{7, 6, 3, 1}));
 
   struct Elem {
@@ -162,9 +162,8 @@ TEST_CASE("sort") {
     double density;
   };
   auto v2 = std::array{Elem{"Au", 19.3}, Elem{"Cu", 8.96}, Elem{"Ag", 10.5}};
-  rg::sort(v2, std::less<>(), &Elem::density);
-  CHECK_UNARY(rg::equal(v2, std::array{"Cu", "Ag", "Au"}, std::equal_to<>{},
-                        &Elem::name));
+  rg::sort(v2, rg::less(), &Elem::density);
+  CHECK_UNARY(rg::equal(v2, std::array{"Cu", "Ag", "Au"}, {}, &Elem::name));
 }
 
 TEST_CASE("views::all, stl container -> view") {
@@ -336,7 +335,7 @@ TEST_CASE("views::linear_distribute") {
 
 TEST_CASE("views::partial_sum, scanl") {
   constexpr std::array v = {1, 2, 3, 4};
-  auto rng = v | rv::partial_sum(std::plus<>());
+  auto rng = v | rv::partial_sum(rg::plus());
   CHECK_UNARY(rg::equal(rng, std::array{1, 3, 6, 10}));
 }
 
@@ -425,7 +424,7 @@ TEST_CASE("views::zip") {
 TEST_CASE("views::zip_with") {
   const auto v1 = std::array{1, 3, 5};
   const auto v2 = std::array{2, 4, 6};
-  auto rng = rv::zip_with(std::plus<>(), v1, v2);
+  auto rng = rv::zip_with(rg::plus(), v1, v2);
   CHECK_UNARY(rg::equal(rng, std::array{3, 7, 11}));
 }
 
