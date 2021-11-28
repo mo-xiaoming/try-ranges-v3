@@ -1,8 +1,7 @@
 #include <doctest/doctest.h>
+#include <fmt/format.h>
 
 #include <range/v3/all.hpp>
-
-#include <fmt/format.h>
 
 using namespace std::literals;
 
@@ -428,4 +427,47 @@ TEST_CASE("views::zip_with") {
   const auto v2 = std::array{2, 4, 6};
   auto rng = rv::zip_with(std::plus<>(), v1, v2);
   CHECK_UNARY(rg::equal(rng, std::array{3, 7, 11}));
+}
+
+TEST_CASE("All-digit magic") {
+  auto all_pairs = rv::closed_iota(100, 999) | rv::for_each([](int i) {
+                     const auto contain_digits = [](std::string s) {
+                       rg::sort(s);
+                       auto r = s | rv::unique | rg::to<std::string>();
+                       return r.size() == 9 && r.find('0') == std::string::npos;
+                     };
+
+                     return rg::yield_if(contain_digits(std::to_string(i) +
+                                                        std::to_string(i * i)),
+                                         std::make_pair(i, i * i));
+                   });
+  CHECK_UNARY(rg::equal(all_pairs, std::array{std::make_pair(567, 321489),
+                                              std::make_pair(854, 729316)}));
+}
+
+TEST_CASE("triangles 1") {
+  auto a = rv::closed_iota(1, 10);
+  auto b = rv::closed_iota(1, 10);
+  auto c = rv::closed_iota(1, 10);
+  auto result = rv::cartesian_product(a, b, c) | rv::for_each([](auto p) {
+                  auto [x, y, z] = p;
+                  return rg::yield_if(z > y && y >= x && x * x + y * y == z * z,
+                                      std::make_tuple(x, y, z));
+                });
+  CHECK_UNARY(rg::equal(
+      result, std::array{std::make_tuple(3, 4, 5), std::make_tuple(6, 8, 10)}));
+}
+
+TEST_CASE("triangles 2") {
+  auto result =
+      rv::closed_iota(1, 10) | rv::for_each([](int c) {
+        return rv::closed_iota(1, c) | rv::for_each([c](int b) {
+                 return rv::closed_iota(1, b) | rv::for_each([c, b](int a) {
+                          return rg::yield_if(a * a + b * b == c * c,
+                                              std::make_tuple(a, b, c));
+                        });
+               });
+      });
+  CHECK_UNARY(rg::equal(
+      result, std::array{std::make_tuple(3, 4, 5), std::make_tuple(6, 8, 10)}));
 }
