@@ -8,7 +8,6 @@
 
       src = self;
 
-#      nativeBuildInputs = [ cmake ninja gdb valgrind (clang-tools.override { stdenv = gcc11Stdenv; })];
       nativeBuildInputs = [ cmake ninja gdb valgrind ];
 
       buildInputs = [ spdlog doctest boost175 range-v3 ];

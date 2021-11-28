@@ -3,6 +3,7 @@ project(try-ranges)
 
 include(cmake/ProjectDefaults.cmake)
 
+list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
 find_package(doctest REQUIRED)
 enable_testing()
 include(CTest)
