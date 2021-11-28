@@ -470,3 +470,15 @@ TEST_CASE("triangles 2") {
   CHECK_UNARY(rg::equal(
       result, std::array{std::make_tuple(3, 4, 5), std::make_tuple(6, 8, 10)}));
 }
+
+inline constexpr auto trim_front = rv::drop_while(::isspace);
+inline constexpr auto trim_back = rv::reverse | trim_front | rv::reverse;
+inline constexpr auto trim = trim_front | trim_back;
+[[nodiscard]] std::string trim_str(std::string_view s) {
+  return s | trim | rg::to<std::string>();
+}
+
+TEST_CASE("trim_str, d_E-VLyUnzc") {
+  const auto s = "  hello world   "s;
+  CHECK_EQ(trim_str(s), "hello world");
+}
