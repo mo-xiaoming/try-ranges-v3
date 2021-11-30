@@ -1,6 +1,6 @@
 #include <doctest/doctest.h>
-#include <fmt/format.h>
 
+#include <fmt/format.h>
 #include <range/v3/all.hpp>
 
 using namespace std::literals;
@@ -471,14 +471,38 @@ TEST_CASE("triangles 2") {
       result, std::array{std::make_tuple(3, 4, 5), std::make_tuple(6, 8, 10)}));
 }
 
+namespace {
 inline constexpr auto trim_front = rv::drop_while(::isspace);
 inline constexpr auto trim_back = rv::reverse | trim_front | rv::reverse;
 inline constexpr auto trim = trim_front | trim_back;
 [[nodiscard]] std::string trim_str(std::string_view s) {
   return s | trim | rg::to<std::string>();
 }
+} // namespace
 
 TEST_CASE("trim_str, d_E-VLyUnzc") {
   const auto s = "  hello world   "s;
   CHECK_EQ(trim_str(s), "hello world");
+}
+
+TEST_CASE("Invocables LNXkPh3Z418") {
+  struct Data {
+    bool valid() const { return p; }
+  private:
+    bool p = true;
+  };
+  std::vector<Data> v = {{}, {}};
+  CHECK_UNARY(rg::all_of(v, &Data::valid));
+}
+
+TEST_CASE(".base()") {
+  struct A {
+    int id;
+    double data;
+  };
+  constexpr auto v = std::array{A{1, 2.7}, A{2,3.}, A{3,9.7}};
+  auto rng = v | rv::transform(&A::id);
+  const auto it = rg::find(rng, 2);
+  CHECK_EQ(*it, 2);
+  CHECK_EQ(it.base()->id, 2);
 }

@@ -16,6 +16,8 @@ add_library(default_compile_options INTERFACE)
 target_compile_options(default_compile_options INTERFACE "$<$<NOT:$<CONFIG:Release>>:-U_FORTIFY_SOURCE;-O0;-ggdb3;-fno-omit-frame-pointer;-fno-inline;-fno-sanitize-recover=all>")
 target_compile_options(default_compile_options INTERFACE "$<$<CXX_COMPILER_ID:GNU>:-fdiagnostics-color=always>")
 target_compile_options(default_compile_options INTERFACE "$<$<CXX_COMPILER_ID:AppleClang,Clang>:-fcolor-diagnostics>")
+target_compile_options(default_compile_options INTERFACE "$<$<CXX_COMPILER_ID:GNU>:-fcoroutines>")
+target_compile_options(default_compile_options INTERFACE "$<$<CXX_COMPILER_ID:AppleClang,Clang>:-fcoroutines-ts>")
 
 add_library(default_compile_warnings INTERFACE)
 set(CMAKE_CXX_FLAGS_DEBUG "")
